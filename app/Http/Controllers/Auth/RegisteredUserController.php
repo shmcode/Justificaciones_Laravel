@@ -30,10 +30,31 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'name' => ['required', 'regex:/^[a-zA-ZÁÉÍÓÚáéíóúÑñ\s]+$/u'],
+            'email' => ['required', 'email', 'regex:/^[a-zA-Z0-9._%+-]+@uamv\.edu\.ni$/i', 'unique:users,email'],
+            'password' => [
+                'required',
+                'min:8',
+                'confirmed',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&]).+$/'
+            ],
+        ], [
+            // Mensajes personalizados
+            'name.required' => 'El nombre es obligatorio.',
+            'name.regex' => 'El nombre solo puede contener letras y espacios.',
+        
+            'email.required' => 'El correo es obligatorio.',
+            'email.email' => 'Debes ingresar un correo válido.',
+            'email.regex' => 'El correo debe ser institucional (@uamv.edu.ni).',
+            'email.unique' => 'Este correo ya está registrado.',
+        
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+            'password.regex' => 'La contraseña debe contener una mayúscula, una minúscula, un número y un símbolo.',
         ]);
+        
+
 
         $user = User::create([
             'name' => $request->name,
