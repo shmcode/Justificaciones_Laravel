@@ -24,8 +24,10 @@ public function index(Request $request)
     }
 
     $justifications = $query->with('student', 'classroom', 'professor')->get();
+        $classrooms = \App\Models\Classroom::all();
 
-    return view('admin.index', compact('justifications', 'status'));
+
+    return view('admin.index', compact('justifications', 'status', 'classrooms'));
 }
 
    
