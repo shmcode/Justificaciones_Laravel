@@ -20,12 +20,19 @@ Route::resource('/teachers', App\Http\Controllers\TeacherAdminController::class)
     Route::post('/justifications/{id}/reject', [AdminController::class, 'reject']);
 });
 
+
+Route::post('/student', [App\Http\Controllers\StudentController::class, 'store'])->name('student.store');
+
 Route::get('/admin/reporte-justificaciones', [App\Http\Controllers\AdminController::class, 'reportePdf'])->name('admin.reporte.pdf');
 
 Route::get('/admin/reporte_pdf', [AdminController::class, 'reportePdf']);
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+Route::get('/student/apelaciones', [App\Http\Controllers\StudentController::class, 'apelaciones']);
+Route::post('/student/apelar/{id}', [App\Http\Controllers\StudentController::class, 'apelar']);
 
 
 Route::post('/justifications/{id}/accept', [AdminController::class, 'accept']);
@@ -40,5 +47,6 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
 
 require __DIR__.'/auth.php';
