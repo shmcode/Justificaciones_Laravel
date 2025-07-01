@@ -65,12 +65,16 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 **## Consideraciones al ejecutar por primera vez el proyecto**
 
 **COMANDOS A EJECUTAR**
-Composer install
-Npm install
-cp .env.example .env (Solo si es necesario)
-php artisan key:generate
-php artisan migrate
-php artisan db:seed (Ejecutar seed, todos)
-php artisan db:seed --class=NombreDelSeeder (Ejecutar seed, especifico)
-php artisan storage:link (Crea el link simbólico de almacenamiento)
-php artisan serve
+
+| Paso  | Comando                                       | Descripción                                                               |
+| ----- | --------------------------------------------- | ------------------------------------------------------------------------- |
+| 🧰 1  | `composer install`                            | Instala las dependencias de PHP definidas en `composer.json`.             |
+| 📦 2  | `npm install`                                 | Instala los paquetes de Node.js necesarios para los assets.               |
+| 🗂️ 3 | `cp .env.example .env`                        | Copia el archivo de entorno base (si aún no existe).                      |
+| 🔐 4  | `php artisan key:generate`                    | Genera la clave de aplicación (`APP_KEY`).                                |
+| 🧱 5  | `php artisan migrate`                         | Ejecuta las migraciones para crear la estructura de la base de datos.     |
+| 🌱 6  | `php artisan db:seed`                         | Ejecuta todos los seeders para poblar la base de datos.                   |
+| 🎯 7  | `php artisan db:seed --class=NombreDelSeeder` | (Opcional) Ejecuta un seeder específico.                                  |
+| 🔗 8  | `php artisan storage:link`                    | Crea un enlace simbólico al directorio `storage` para acceder a archivos. |
+| ▶️ 9  | `php artisan serve`                           | Inicia el servidor local de desarrollo.                                   |
+
