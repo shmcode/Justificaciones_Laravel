@@ -139,11 +139,11 @@
               <td class="py-2 px-4 text-center align-middle">{{ $j->motivo }}</td>
               <td class="py-2 px-4 text-center align-middle">{{ $j->comentario }}</td>
               <td class="py-2 px-4 text-center align-middle">
-                @if($j->archivo)
-                <a href="{{ Storage::url($j->archivo) }}" target="_blank" class="text-custom-blue underline">Ver
-                  archivo</a>
+                @if($j->archivo_url)
+                <a href="{{ $j->archivo_url }}" target="_blank" class="text-custom-blue underline">Ver archivo</a>
                 @endif
               </td>
+
               <td class="py-2 px-4 text-center align-middle">{{ ucfirst($j->status) }}</td>
             </tr>
             @endforeach

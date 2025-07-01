@@ -17,18 +17,24 @@ class AdminController extends Controller
 public function index(Request $request)
 {
     $status = $request->status ?? '';
+    $classroom_id = $request->classroom_id ?? '';
+
     $query = Justification::query();
 
     if ($status) {
         $query->where('status', $status);
     }
 
+    if ($classroom_id) {
+        $query->where('classroom_id', $classroom_id);
+    }
+
     $justifications = $query->with('student', 'classroom', 'professor')->get();
-        $classrooms = \App\Models\Classroom::all();
+    $classrooms = Classroom::all();
 
-
-    return view('admin.index', compact('justifications', 'status', 'classrooms'));
+    return view('admin.index', compact('justifications', 'status', 'classrooms', 'classroom_id'));
 }
+
 
    
 public function accept(Request $request, $id)
@@ -55,10 +61,19 @@ public function reject(Request $request, $id)
     return redirect()->back()->with('success', 'Justificación rechazada.');
 }
 
-    public function reportePdf()
+    public function reportePdf(Request $request)
 {
-    $justifications = \App\Models\Justification::with('student', 'classroom', 'professor')->get();
+    $status = $request->input('status');
+
+    $justifications = Justification::with(['student', 'classroom', 'professor'])
+        ->when($status, function ($query) use ($status) {
+            return $query->where('status', $status);
+        })
+        ->orderBy('created_at', 'desc')
+        ->get();
+
     $pdf = Pdf::loadView('admin.reporte_pdf', compact('justifications'));
-    return $pdf->download('reporte-justificaciones.pdf');
+
+    return $pdf->download('reporte_justificaciones.pdf');
 }
 }

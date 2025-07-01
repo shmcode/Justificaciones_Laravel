@@ -29,7 +29,7 @@
         </form>
 
         <div class="w-full sm:w-auto text-right">
-          <a href="{{ url('/admin/reporte_pdf') }}" target="_blank"
+          <a href="{{ url('/admin/reporte_pdf') }}?status={{ request('status') }}" target="_blank"
             class="block sm:inline bg-custom-blue text-white px-4 py-2 rounded hover:bg-blue-900 text-center w-full sm:w-auto">
             Generar Reporte PDF
           </a>
@@ -52,16 +52,17 @@
           <tbody>
             @foreach($justifications as $j)
             <tr class="border-b custom-blue-hover transition cursor-pointer" @click="openDetail = true; selected = {
-                id: '{{ $j->id }}',
-                clase: '{{ addslashes($j->classroom->name ?? "-") }}',
-                estudiante: '{{ addslashes($j->student->name ?? "-") }}',
-                motivo: '{{ addslashes($j->motivo) }}',
-                comentario: '{{ addslashes($j->comentario) }}',
-                archivo: '{{ $j->archivo ? Storage::url($j->archivo) : null }}',
-                status: '{{ ucfirst($j->status) }}',
-                respuesta_admin: '{{ addslashes($j->respuesta_admin ?? "-") }}',
-                pendiente: '{{ in_array($j->status, ["pendiente", "apelado"]) ? "1" : "0" }}'
-              }">
+      id: '{{ $j->id }}',
+      clase: '{{ addslashes($j->classroom->name ?? "-") }}',
+      estudiante: '{{ addslashes($j->student->name ?? "-") }}',
+      motivo: '{{ addslashes($j->motivo) }}',
+      comentario: '{{ addslashes($j->comentario) }}',
+      archivo: '{{ $j->archivo ? Storage::url($j->archivo) : '' }}',
+      status: '{{ ucfirst($j->status) }}',
+      respuesta_admin: '{{ addslashes($j->respuesta_admin ?? "-") }}',
+      pendiente: '{{ in_array($j->status, ["pendiente", "apelado"]) ? "1" : "0" }}'
+    }">
+
               <td class="py-2 px-4 text-center">{{ $j->classroom->name ?? '-' }}</td>
               <td class="py-2 px-4 text-center">{{ $j->student->name ?? '-' }}</td>
               <td class="py-2 px-4 text-center">{{ $j->motivo }}</td>
@@ -224,12 +225,11 @@
 
     respuestaInput.value = '';
 
-    // Establecer mensaje personalizado en español si el campo está vacío al enviar
     respuestaInput.addEventListener('invalid', function() {
       this.setCustomValidity('Por favor llena este campo');
     });
 
-    // Limpiar el mensaje personalizado si ya es válido
+    // Limpiar el mensaje si ya es válido
     respuestaInput.addEventListener('input', function() {
       this.setCustomValidity('');
     });
