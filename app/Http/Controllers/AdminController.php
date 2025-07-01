@@ -55,10 +55,19 @@ public function reject(Request $request, $id)
     return redirect()->back()->with('success', 'Justificación rechazada.');
 }
 
-    public function reportePdf()
+    public function reportePdf(Request $request)
 {
-    $justifications = \App\Models\Justification::with('student', 'classroom', 'professor')->get();
-    $pdf = Pdf::loadView('admin.reporte_pdf', compact('justifications'));
+    $status = $request->status ?? '';
+    $query = \App\Models\Justification::query();
+
+    if ($status) {
+        $query->where('status', $status);
+    }
+
+    $justifications = $query->with('student', 'classroom', 'professor')->get();
+    $pdf = Pdf::loadView('admin.reporte_pdf', compact('justifications', 'status'));
+
     return $pdf->download('reporte-justificaciones.pdf');
 }
+
 }
