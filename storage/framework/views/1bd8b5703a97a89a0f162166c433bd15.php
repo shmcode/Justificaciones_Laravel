@@ -221,9 +221,154 @@
     </div>
 
     
-    <!-- Modal Detalle, Modal de aceptación/rechazo, scripts... -->
+      <!-- Modal Detalle (nuevo diseño) -->
+      <div x-show="openDetail" x-transition x-cloak
+      class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50" style="display: none;">
+      <div class="px-4 w-full">
+        <div class="bg-white rounded-xl shadow-xl p-10 w-full max-w-2xl mx-auto relative max-h-[90vh] overflow-y-auto">
+          <button class="absolute top-2 right-2 text-gray-400 hover:text-gray-600 text-2xl"
+            @click="openDetail = false">&times;</button>
 
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-bold text-custom-blue">Detalle de Justificación</h3>
+            <template x-if="selected.status">
+              <span class="px-3 py-1 rounded-full text-sm font-semibold" :class="{
+                'bg-yellow-100 text-yellow-800': selected.status === 'Pendiente',
+                'bg-green-100 text-green-800': selected.status === 'Aceptado',
+                'bg-red-100 text-red-800': selected.status === 'Rechazado',
+                'bg-yellow-200 text-yellow-900': selected.status === 'Apelado'
+              }" x-text="selected.status"></span>
+            </template>
+          </div>
+
+          <form class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Clase</label>
+              <input type="text" class="mt-1 block w-full rounded border-gray-300 bg-gray-100" x-model="selected.clase"
+                disabled>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Estudiante</label>
+              <input type="text" class="mt-1 block w-full rounded border-gray-300 bg-gray-100"
+                x-model="selected.estudiante" disabled>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Motivo</label>
+              <input type="text" class="mt-1 block w-full rounded border-gray-300 bg-gray-100" x-model="selected.motivo"
+                disabled>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Comentario</label>
+              <textarea class="mt-1 block w-full rounded border-gray-300 bg-gray-100" x-model="selected.comentario"
+                rows="2" disabled></textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Respuesta del Admin</label>
+              <textarea class="mt-1 block w-full rounded border-gray-300 bg-gray-100" x-model="selected.respuesta_admin"
+                rows="2" disabled></textarea>
+            </div>
+            <template x-if="selected.archivo">
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Archivo</label>
+                <template x-if="selected.archivo.toLowerCase().endsWith('.pdf')">
+                  <iframe :src="selected.archivo" class="w-full h-64 mt-2 rounded border"></iframe>
+                </template>
+                <template
+                  x-if="['.jpg','.jpeg','.png','.gif','.bmp','.webp'].some(ext => selected.archivo.toLowerCase().endsWith(ext))">
+                  <img :src="selected.archivo" class="w-auto max-h-64 mt-2 mx-auto rounded border">
+                </template>
+                <template
+                  x-if="!selected.archivo.toLowerCase().endsWith('.pdf') && !['.jpg','.jpeg','.png','.gif','.bmp','.webp'].some(ext => selected.archivo.toLowerCase().endsWith(ext))">
+                  <a :href="selected.archivo" target="_blank" class="text-custom-blue underline mt-2 block">Ver
+                    archivo</a>
+                </template>
+              </div>
+            </template>
+          </form>
+
+          <div class="flex justify-end gap-4 mt-8" x-show="selected.pendiente === '1'">
+            <button @click="openModal('accept', selected.id)"
+              class="bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-xl shadow transition">
+              Aceptar
+            </button>
+            <button @click="openModal('reject', selected.id)"
+              class="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-xl shadow transition">
+              Rechazar
+            </button>
+            <button @click="openDetail = false"
+              class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-6 py-2 rounded-xl shadow transition">
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de aceptación/rechazo -->
+    <div id="modal-justificacion"
+      class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden px-4">
+      <div class="bg-white rounded shadow-lg p-6 w-full max-w-md">
+        <form id="modal-form" method="POST">
+          <?php echo csrf_field(); ?>
+          <div class="mb-4">
+            <label class="block font-semibold mb-2" id="modal-label">Motivo:</label>
+            <input type="text" name="respuesta_admin" id="modal-respuesta" required
+              class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-custom-blue">
+          </div>
+          <div class="flex justify-end">
+            <button type="button" onclick="closeModal()"
+              class="mr-2 px-4 py-2 rounded bg-gray-300 hover:bg-gray-400">Cancelar</button>
+            <button type="submit"
+              class="px-4 py-2 rounded bg-custom-blue text-white hover:bg-custom-blue">Enviar</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
+
+  <script>
+  let modal = document.getElementById('modal-justificacion');
+  let form = document.getElementById('modal-form');
+  let label = document.getElementById('modal-label');
+  let respuestaInput = document.getElementById('modal-respuesta');
+
+  function openModal(tipo, id) {
+    modal.classList.remove('hidden');
+
+    if (tipo === 'accept') {
+      form.action = '/justifications/' + id + '/accept';
+      label.textContent = 'Motivo de aceptación:';
+      respuestaInput.placeholder = 'Motivo de aceptación';
+    } else {
+      form.action = '/justifications/' + id + '/reject';
+      label.textContent = 'Motivo de rechazo:';
+      respuestaInput.placeholder = 'Motivo de rechazo';
+    }
+
+    respuestaInput.value = '';
+
+    // Establecer mensaje personalizado en español si el campo está vacío al enviar
+    respuestaInput.addEventListener('invalid', function() {
+      this.setCustomValidity('Por favor llena este campo');
+    });
+
+    // Limpiar el mensaje personalizado si ya es válido
+    respuestaInput.addEventListener('input', function() {
+      this.setCustomValidity('');
+    });
+
+    setTimeout(() => respuestaInput.focus(), 100);
+  }
+
+
+  function closeModal() {
+    modal.classList.add('hidden');
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (!modal.classList.contains('hidden') && e.key === "Escape") closeModal();
+  });
+  </script>
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
