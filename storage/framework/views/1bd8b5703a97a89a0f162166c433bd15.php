@@ -1,5 +1,14 @@
-{{-- resources/views/admin/index.blade.php --}}
-<x-app-layout>
+
+<?php if (isset($component)) { $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54 = $attributes; } ?>
+<?php $component = App\View\Components\AppLayout::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('app-layout'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\App\View\Components\AppLayout::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
   <script src="//unpkg.com/alpinejs" defer></script>
   <style>
     .custom-blue-hover:hover {
@@ -14,7 +23,7 @@
       <h2 class="text-2xl font-bold mb-6 text-custom-blue">Justificaciones de mis clases</h2>
 
       <div class="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-        {{-- Filtro estilo desplegable --}}
+        
         <div x-data="{ open: false }" class="relative w-full sm:w-auto">
           <button type="button" @click="open = !open"
             class="bg-white border border-gray-200 text-custom-blue px-4 py-2 rounded-xl shadow hover:bg-gray-100 transition font-semibold flex items-center gap-2 w-full sm:w-auto">
@@ -45,20 +54,20 @@
   "
 >
 
-            {{-- Formulario de filtros --}}
-            <form method="GET" action="{{ url('/admin') }}" class="flex flex-col space-y-4">
-            <input type="hidden" name="classroom_id" value="{{ $classroomId }}">
-            <input type="hidden" name="status"       value="{{ $status }}">
-              {{-- Filtro por clase --}}
+            
+            <form method="GET" action="<?php echo e(url('/admin')); ?>" class="flex flex-col space-y-4">
+            <input type="hidden" name="classroom_id" value="<?php echo e($classroomId); ?>">
+            <input type="hidden" name="status"       value="<?php echo e($status); ?>">
+              
               <div>
                 <div x-data="{
                   openClase: false,
-                  selectedClase: '{{ request('classroom_id') }}',
+                  selectedClase: '<?php echo e(request('classroom_id')); ?>',
                   clases: [
                     { id: '', name: 'Todas las clases' },
-                    @foreach($classrooms as $c)
-                      { id: '{{ $c->id }}', name: '{{ addslashes($c->name) }}' },
-                    @endforeach
+                    <?php $__currentLoopData = $classrooms; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $c): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                      { id: '<?php echo e($c->id); ?>', name: '<?php echo e(addslashes($c->name)); ?>' },
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                   ]
                 }" class="relative">
                   <label class="block text-sm font-semibold text-gray-700 mb-2">Clase</label>
@@ -84,11 +93,11 @@
                 </div>
               </div>
 
-              {{-- Filtro por estado --}}
+              
               <div>
                 <div x-data="{
                   openEstado: false,
-                  selectedEstado: '{{ request('status') }}',
+                  selectedEstado: '<?php echo e(request('status')); ?>',
                   estados: [
                     { id: '', name: 'Todos los estados' },
                     { id: 'pendiente', name: 'Pendiente' },
@@ -120,7 +129,7 @@
                 </div>
               </div>
 
-              {{-- Botón Filtrar --}}
+              
               <div>
                 <button type="submit"
                         class="bg-custom-blue text-white px-6 py-3 rounded-xl shadow hover:bg-custom-blue-700 transition font-semibold">
@@ -131,12 +140,12 @@
           </div>
         </div>
 
-        {{-- Botón Generar PDF --}}
+        
         <div class="w-full sm:w-auto text-right">
-          <a href="{{ route('admin.reporte.pdf', [
+          <a href="<?php echo e(route('admin.reporte.pdf', [
                 'classroom_id' => request('classroom_id'),
                 'status'       => request('status'),
-              ]) }}"
+              ])); ?>"
              target="_blank"
              class="block sm:inline bg-custom-blue text-white px-4 py-2 rounded hover:bg-blue-900 text-center w-full sm:w-auto">
             Generar Reporte PDF
@@ -144,10 +153,10 @@
         </div>
       </div>
 
-      {{-- Tabla de justificaciones --}}
+      
       <div class="overflow-x-auto">
         <table class="min-w-full bg-white rounded-xl shadow-lg overflow-hidden text-sm">
-          {{-- <thead> y <tbody> igual que antes --}}
+          
           <thead>
             <tr class="bg-custom-blue text-white whitespace-nowrap">
               <th class="py-2 px-4">Clase</th>
@@ -160,58 +169,69 @@
             </tr>
           </thead>
           <tbody>
-            @foreach($justifications as $j)
+            <?php $__currentLoopData = $justifications; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $j): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <tr class="border-b custom-blue-hover transition cursor-pointer"
                 @click="openDetail = true; selected = {
-                   id: '{{ $j->id }}',
-                   clase: '{{ addslashes($j->classroom->name ?? "-") }}',
-                   estudiante: '{{ addslashes($j->student->name ?? "-") }}',
-                   motivo: '{{ addslashes($j->motivo) }}',
-                   comentario: '{{ addslashes($j->comentario) }}',
-                   archivo: '{{ $j->archivo ? Storage::url($j->archivo) : null }}',
-                   status: '{{ ucfirst($j->status) }}',
-                   respuesta_admin: '{{ addslashes($j->respuesta_admin ?? "-") }}',
-                   pendiente: '{{ in_array($j->status, ["pendiente","apelado"]) ? "1":"0" }}'
+                   id: '<?php echo e($j->id); ?>',
+                   clase: '<?php echo e(addslashes($j->classroom->name ?? "-")); ?>',
+                   estudiante: '<?php echo e(addslashes($j->student->name ?? "-")); ?>',
+                   motivo: '<?php echo e(addslashes($j->motivo)); ?>',
+                   comentario: '<?php echo e(addslashes($j->comentario)); ?>',
+                   archivo: '<?php echo e($j->archivo ? Storage::url($j->archivo) : null); ?>',
+                   status: '<?php echo e(ucfirst($j->status)); ?>',
+                   respuesta_admin: '<?php echo e(addslashes($j->respuesta_admin ?? "-")); ?>',
+                   pendiente: '<?php echo e(in_array($j->status, ["pendiente","apelado"]) ? "1":"0"); ?>'
                 }">
-              {{-- ... celdas igual que antes ... --}}
-              <td class="py-2 px-4 text-center">{{ $j->classroom->name }}</td>
-              <td class="py-2 px-4 text-center">{{ $j->student->name }}</td>
-              <td class="py-2 px-4 text-center">{{ $j->motivo }}</td>
-              <td class="py-2 px-4 text-center">{{ $j->comentario }}</td>
+              
+              <td class="py-2 px-4 text-center"><?php echo e($j->classroom->name); ?></td>
+              <td class="py-2 px-4 text-center"><?php echo e($j->student->name); ?></td>
+              <td class="py-2 px-4 text-center"><?php echo e($j->motivo); ?></td>
+              <td class="py-2 px-4 text-center"><?php echo e($j->comentario); ?></td>
               <td class="py-2 px-4 text-center">
-                @if($j->archivo)
-                  <a href="{{ Storage::url($j->archivo) }}" target="_blank"
+                <?php if($j->archivo): ?>
+                  <a href="<?php echo e(Storage::url($j->archivo)); ?>" target="_blank"
                      class="text-custom-blue underline">Ver archivo</a>
-                @endif
+                <?php endif; ?>
               </td>
               <td class="py-2 px-4 text-center">
                 <span class="px-2 py-1 rounded text-xs font-medium
-                  @if($j->status=='pendiente') bg-yellow-100 text-yellow-800
-                  @elseif($j->status=='aceptado') bg-green-100 text-green-800
-                  @elseif($j->status=='rechazado') bg-red-100 text-red-800
-                  @else bg-yellow-200 text-yellow-900 @endif">
-                  {{ ucfirst($j->status) }}
+                  <?php if($j->status=='pendiente'): ?> bg-yellow-100 text-yellow-800
+                  <?php elseif($j->status=='aceptado'): ?> bg-green-100 text-green-800
+                  <?php elseif($j->status=='rechazado'): ?> bg-red-100 text-red-800
+                  <?php else: ?> bg-yellow-200 text-yellow-900 <?php endif; ?>">
+                  <?php echo e(ucfirst($j->status)); ?>
+
                 </span>
               </td>
               <td class="py-2 px-4 text-center">
-                @if(in_array($j->status, ['pendiente','apelado']))
-                  <button onclick="openModal('accept', {{ $j->id }})"
+                <?php if(in_array($j->status, ['pendiente','apelado'])): ?>
+                  <button onclick="openModal('accept', <?php echo e($j->id); ?>)"
                           class="bg-green-600 text-white px-2 py-1 rounded hover:bg-green-700 text-xs">Aceptar</button>
-                  <button onclick="openModal('reject', {{ $j->id }})"
+                  <button onclick="openModal('reject', <?php echo e($j->id); ?>)"
                           class="bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700 ml-2 text-xs">Rechazar</button>
-                @else
+                <?php else: ?>
                   <span class="text-gray-400">-</span>
-                @endif
+                <?php endif; ?>
               </td>
             </tr>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
           </tbody>
         </table>
       </div>
     </div>
 
-    {{-- ↓ Resto de los modales y scripts (igual que antes) ↓ --}}
+    
     <!-- Modal Detalle, Modal de aceptación/rechazo, scripts... -->
 
   </div>
-</x-app-layout>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
+<?php $attributes = $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
+<?php unset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
+<?php $component = $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
+<?php unset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
+<?php endif; ?>
+<?php /**PATH /Users/mariabelenaa/JUSTIFICACIONES_GIT_3.0/Justificaciones_Laravel/resources/views/admin/index.blade.php ENDPATH**/ ?>
