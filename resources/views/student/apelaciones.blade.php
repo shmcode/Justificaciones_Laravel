@@ -10,7 +10,7 @@
     {{-- Justificaciones rechazadas (pueden apelar) --}}
     <h3 class="text-lg font-semibold mb-2 font-montserrat">Pendientes de Apelación</h3>
     <div class="overflow-x-auto">
-      <table class="min-w-full bg-white rounded shadow mb-6 font-montserrat">
+      <table class="min-w-full bg-white rounded-xl shadow-lg overflow-hidden text-sm">
         <tr class="bg-custom-blue text-white">
           <th class="py-2 px-4">Clase</th>
           <th class="py-2 px-4">Profesor</th>
@@ -50,7 +50,7 @@
     {{-- Apelaciones realizadas --}}
     <h3 class="text-lg font-semibold mb-2 mt-8 font-montserrat">Apelaciones Realizadas</h3>
     <div class="overflow-x-auto">
-      <table class="min-w-full bg-white rounded shadow mb-6 font-montserrat">
+      <table class="min-w-full bg-white rounded-xl shadow-lg overflow-hidden text-sm">
         <tr class="bg-custom-blue text-white ">
           <th class="py-2 px-4 ">Clase</th>
           <th class="py-2 px-4">Profesor</th>
