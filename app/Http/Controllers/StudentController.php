@@ -58,6 +58,10 @@ public function index(Request $request)
     }
 
     $justifications = $query->with('classroom', 'professor')->get();
+    // URL pública del archivo
+    $justifications->each(function ($j) {
+        $j->archivo_url = $j->archivo ? Storage::url($j->archivo) : null;
+    });
     $status = $request->status ?? '';
 
     $classrooms = \App\Models\Classroom::whereIn('id', 
@@ -103,7 +107,8 @@ public function store(Request $request)
         $justification->comentario = $request->comentario;
 
         if ($request->hasFile('archivo')) {
-            $justification->archivo = $request->file('archivo')->store('justificaciones');
+            $justification->archivo = $request->file('archivo')->store('justificaciones', 'public');
+
         }
 
         $justification->save();
@@ -121,6 +126,11 @@ $justifications = Justification::where('student_id', auth()->id())
     ->where('updated_at', '>=', now()->subDays(7))
     ->with(['classroom', 'professor'])
     ->get();
+
+        //Aquí se agrega la URL accesible
+        $justifications->each(function ($j) {
+            $j->archivo_url = $j->archivo ? Storage::url($j->archivo) : null;
+        });
 
 
     return view('student.apelaciones', compact('justifications'));
@@ -143,7 +153,8 @@ public function apelar(Request $request, $id)
     $justification->status = 'apelado';
 
     if ($request->hasFile('archivo_apelacion')) {
-        $justification->archivo = $request->file('archivo_apelacion')->store('justificaciones');
+        $justification->archivo = $justification->archivo = $request->file('archivo_apelacion')->store('justificaciones', 'public');
+
     }
 
     $justification->save();

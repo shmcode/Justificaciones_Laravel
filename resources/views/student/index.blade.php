@@ -130,7 +130,7 @@
               profesor: '{{ addslashes($j->professor->name) }}',
               motivo: '{{ addslashes($j->motivo) }}',
               comentario: '{{ addslashes($j->comentario) }}',
-              archivo: '{{ addslashes($j->archivo) }}',
+              archivo: '{{ addslashes($j->archivo_url) }}',
               status: '{{ ucfirst($j->status) }}',
               respuesta_admin: '{{ addslashes(ucfirst($j->respuesta_admin)) }}'
             }">
@@ -214,52 +214,52 @@
             </form>
 
             {{-- Detalle de justificación --}}
-            <form class="space-y-4 mt-6">
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Clase</label>
-                <input type="text" class="mt-1 block w-full rounded border-gray-300 bg-gray-100"
-                  x-model="selected.clase" disabled>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Profesor</label>
-                <input type="text" class="mt-1 block w-full rounded border-gray-300 bg-gray-100"
-                  x-model="selected.profesor" disabled>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Motivo</label>
-                <input type="text" class="mt-1 block w-full rounded border-gray-300 bg-gray-100"
-                  x-model="selected.motivo" disabled>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Comentario</label>
-                <textarea class="mt-1 block w-full rounded border-gray-300 bg-gray-100" x-model="selected.comentario"
-                  rows="2" disabled></textarea>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Respuesta</label>
-                <textarea class="mt-1 block w-full rounded border-gray-300 bg-gray-100"
-                  x-model="selected.respuesta_admin" rows="2" disabled></textarea>
-              </div>
-              <template x-if="selected.archivo">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700">Archivo</label>
-                  <template x-if="selected.archivo.toLowerCase().endsWith('.pdf')">
-                    <iframe :src="'{{ Storage::url('') }}' + selected.archivo"
-                      class="w-full h-64 rounded border mt-2"></iframe>
-                  </template>
-                  <template
-                    x-if="['.jpg','.jpeg','.png','.gif','.bmp','.webp'].some(ext => selected.archivo.toLowerCase().endsWith(ext))">
-                    <img :src="'{{ Storage::url('') }}' + selected.archivo" alt="Previsualización"
-                      class="w-auto max-h-64 rounded border mt-2 mx-auto">
-                  </template>
-                  <template
-                    x-if="!selected.archivo.toLowerCase().endsWith('.pdf') && !['.jpg','.jpeg','.png','.gif','.bmp','.webp'].some(ext => selected.archivo.toLowerCase().endsWith(ext))">
-                    <a :href="'{{ Storage::url('') }}' + selected.archivo" target="_blank"
-                      class="text-custom-blue underline mt-2 block">Descargar archivo</a>
-                  </template>
-                </div>
-              </template>
-            </form>
+<form class="space-y-4 mt-6">
+  <div>
+    <label class="block text-sm font-medium text-gray-700">Clase</label>
+    <input type="text" class="mt-1 block w-full rounded border-gray-300 bg-gray-100"
+      x-model="selected.clase" disabled>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-gray-700">Profesor</label>
+    <input type="text" class="mt-1 block w-full rounded border-gray-300 bg-gray-100"
+      x-model="selected.profesor" disabled>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-gray-700">Motivo</label>
+    <input type="text" class="mt-1 block w-full rounded border-gray-300 bg-gray-100"
+      x-model="selected.motivo" disabled>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-gray-700">Comentario</label>
+    <textarea class="mt-1 block w-full rounded border-gray-300 bg-gray-100" x-model="selected.comentario"
+      rows="2" disabled></textarea>
+  </div>
+  <div>
+    <label class="block text-sm font-medium text-gray-700">Respuesta</label>
+    <textarea class="mt-1 block w-full rounded border-gray-300 bg-gray-100"
+      x-model="selected.respuesta_admin" rows="2" disabled></textarea>
+  </div>
+  <template x-if="selected.archivo">
+    <div>
+      <label class="block text-sm font-medium text-gray-700">Archivo</label>
+      <template x-if="selected.archivo.toLowerCase().endsWith('.pdf')">
+        <iframe :src="selected.archivo"
+          class="w-full h-64 rounded border mt-2"></iframe>
+      </template>
+      <template
+        x-if="['.jpg','.jpeg','.png','.gif','.bmp','.webp'].some(ext => selected.archivo.toLowerCase().endsWith(ext))">
+        <img :src="selected.archivo" alt="Previsualización"
+          class="w-auto max-h-64 rounded border mt-2 mx-auto">
+      </template>
+      <template
+        x-if="!selected.archivo.toLowerCase().endsWith('.pdf') && !['.jpg','.jpeg','.png','.gif','.bmp','.webp'].some(ext => selected.archivo.toLowerCase().endsWith(ext))">
+        <a :href="selected.archivo" target="_blank"
+          class="text-custom-blue underline mt-2 block">Descargar archivo</a>
+      </template>
+    </div>
+  </template>
+</form>
           </div>
         </div>
       </div>

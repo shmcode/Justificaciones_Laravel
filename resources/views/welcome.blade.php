@@ -235,12 +235,13 @@
       </div>
       <div>
         <strong>CONÓCENOS</strong><br>
-        <a href="#">Sobre Nosotros</a>
+        <a href="https://uam.edu.ni/nosotros/">Sobre Nosotros</a>
       </div>
       <div>
-        <strong>CONTÁCTANOS</strong><br>
-        PBX: +(505) 2278-3800
-      </div>
+  <strong>CONTÁCTANOS</strong><br>
+  <a href="tel:+50522783800" class="btn-call">+(505) 2278-3800</a>
+</div>
+
     </div>
     <div class="copyright">
       © 2025 – Universidad Americana – UAM
