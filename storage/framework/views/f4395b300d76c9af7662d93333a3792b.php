@@ -1,4 +1,13 @@
-<x-app-layout>
+<?php if (isset($component)) { $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54 = $attributes; } ?>
+<?php $component = App\View\Components\AppLayout::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('app-layout'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\App\View\Components\AppLayout::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <style>
     .custom-blue-hover:hover {
@@ -10,9 +19,9 @@
   <div class="container mx-auto px-4" x-data="teacherModal()">
     <h2 class="text-2xl font-bold mb-6 text-custom-blue">Justificaciones de mis clases</h2>
 
-    {{-- Filtro y botón PDF alineados --}}
+    
     <div class="mb-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-      {{-- Filtro estilo desplegable --}}
+      
       <div x-data="{ open: false }" class="relative w-full sm:w-auto">
       <button type="button" @click="open = !open"
           class="bg-white border border-gray-200 text-custom-blue px-4 py-2 rounded-xl shadow hover:bg-gray-100 transition font-semibold flex items-center gap-2">
@@ -33,17 +42,17 @@
           x-transition
           class="absolute left-0 mt-2 w-full sm:w-auto sm:max-w-md bg-white rounded-2xl shadow-xl p-6 z-10 border border-gray-100 flex flex-col space-y-4"
         >
-          <form method="GET" action="{{ url('/teacher') }}" class="flex flex-col space-y-4">
-            {{-- Filtro por clase --}}
+          <form method="GET" action="<?php echo e(url('/teacher')); ?>" class="flex flex-col space-y-4">
+            
             <div class="flex-1 min-w-[200px]">
               <div x-data="{
                 openClase: false,
-                selectedClase: '{{ request('classroom_id') }}',
+                selectedClase: '<?php echo e(request('classroom_id')); ?>',
                 clases: [
                   { id: '', name: 'Todas las clases' },
-                  @foreach($classrooms as $classroom)
-                    { id: '{{ $classroom->id }}', name: '{{ addslashes($classroom->name) }}' },
-                  @endforeach
+                  <?php $__currentLoopData = $classrooms; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $classroom): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    { id: '<?php echo e($classroom->id); ?>', name: '<?php echo e(addslashes($classroom->name)); ?>' },
+                  <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 ]
               }" class="relative">
                 <label class="block text-sm font-semibold text-gray-700 mb-2">Clase</label>
@@ -70,11 +79,11 @@
               </div>
             </div>
 
-            {{-- Filtro por estado --}}
+            
             <div class="flex-1 min-w-[200px]">
             <div x-data="{
   openEstado: false,
-  selectedEstado: '{{ request()->has('status') ? request('status') : null }}',
+  selectedEstado: '<?php echo e(request()->has('status') ? request('status') : null); ?>',
   estados: [
     { id: '', name: 'Todos los estados' },
     { id: 'pendiente', name: 'Pendiente' },
@@ -84,12 +93,12 @@
   ],
   init() {
     // Solo ejecuta esto si NO hay parámetro 'status' en la URL
-    @if (!request()->has('status'))
+    <?php if(!request()->has('status')): ?>
       this.selectedEstado = 'aceptado';
       this.$nextTick(() => {
         this.$el.closest('form').submit();
       });
-    @endif
+    <?php endif; ?>
   }
 }" class="relative">
 
@@ -118,7 +127,7 @@
               </div>
             </div>
 
-            {{-- Botón Filtrar --}}
+            
             <div>
               <button type="submit"
                 class="bg-custom-blue text-white px-6 py-3 rounded-xl shadow hover:bg-custom-blue-700 transition font-semibold">
@@ -129,13 +138,13 @@
         </div>
       </div>
 
-      {{-- Botón PDF --}}
+      
       <div class="w-full sm:w-auto text-right">
       <a
-  href="{{ route('teacher.reporte_pdf', [
+  href="<?php echo e(route('teacher.reporte_pdf', [
     'classroom_id' => request('classroom_id'),
     'status'       => request('status'),
-  ]) }}"
+  ])); ?>"
   target="_blank"
   class="inline-block bg-custom-blue text-white px-6 py-3 rounded-xl shadow hover:bg-blue-900 font-semibold transition w-full sm:w-auto text-center"
 >
@@ -158,34 +167,34 @@
           </tr>
         </thead>
         <tbody>
-          @foreach($justifications as $j)
+          <?php $__currentLoopData = $justifications; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $j): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
           <tr class="border-b custom-blue-hover cursor-pointer"
               @click="openModal({
-                id: '{{ $j->id }}',
-                estudiante: '{{ addslashes($j->student->name ?? '-') }}',
-                clase: '{{ addslashes($j->classroom->name ?? '-') }}',
-                motivo: '{{ addslashes($j->motivo) }}',
-                comentario: '{{ addslashes($j->comentario) }}',
-                archivo: '{{ $j->archivo ? Storage::url($j->archivo) : '' }}',
-                estado: '{{ ucfirst($j->status) }}'
+                id: '<?php echo e($j->id); ?>',
+                estudiante: '<?php echo e(addslashes($j->student->name ?? '-')); ?>',
+                clase: '<?php echo e(addslashes($j->classroom->name ?? '-')); ?>',
+                motivo: '<?php echo e(addslashes($j->motivo)); ?>',
+                comentario: '<?php echo e(addslashes($j->comentario)); ?>',
+                archivo: '<?php echo e($j->archivo ? Storage::url($j->archivo) : ''); ?>',
+                estado: '<?php echo e(ucfirst($j->status)); ?>'
               })">
-            <td class="py-2 px-4 text-center align-middle">{{ $j->student->name ?? '-' }}</td>
-            <td class="py-2 px-4 text-center align-middle">{{ $j->classroom->name ?? '-' }}</td>
-            <td class="py-2 px-4 text-center align-middle">{{ $j->motivo }}</td>
-            <td class="py-2 px-4 text-center align-middle">{{ $j->comentario }}</td>
+            <td class="py-2 px-4 text-center align-middle"><?php echo e($j->student->name ?? '-'); ?></td>
+            <td class="py-2 px-4 text-center align-middle"><?php echo e($j->classroom->name ?? '-'); ?></td>
+            <td class="py-2 px-4 text-center align-middle"><?php echo e($j->motivo); ?></td>
+            <td class="py-2 px-4 text-center align-middle"><?php echo e($j->comentario); ?></td>
             <td class="py-2 px-4 text-center align-middle">
-              @if($j->archivo)
-              <a href="{{ Storage::url($j->archivo) }}" target="_blank" class="text-blue-700 underline">Ver archivo</a>
-              @endif
+              <?php if($j->archivo): ?>
+              <a href="<?php echo e(Storage::url($j->archivo)); ?>" target="_blank" class="text-blue-700 underline">Ver archivo</a>
+              <?php endif; ?>
             </td>
-            <td class="py-2 px-4 text-center align-middle">{{ ucfirst($j->status) }}</td>
+            <td class="py-2 px-4 text-center align-middle"><?php echo e(ucfirst($j->status)); ?></td>
           </tr>
-          @endforeach
+          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </tbody>
       </table>
     </div>
 
-    {{-- Modal Detalle --}}
+    
     <div x-show="open" x-cloak class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
       <div class="px-4 w-full">
         <div class="bg-white rounded-xl shadow-xl p-10 w-full max-w-2xl mx-auto relative max-h-[90vh] overflow-y-auto">
@@ -251,4 +260,14 @@
       }
     }
   </script>
-</x-app-layout>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
+<?php $attributes = $__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
+<?php unset($__attributesOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54)): ?>
+<?php $component = $__componentOriginal9ac128a9029c0e4701924bd2d73d7f54; ?>
+<?php unset($__componentOriginal9ac128a9029c0e4701924bd2d73d7f54); ?>
+<?php endif; ?>
+<?php /**PATH /Users/mariabelenaa/JUSTIFICACIONES_GIT_3.0/Justificaciones_Laravel/resources/views/teacher/index.blade.php ENDPATH**/ ?>

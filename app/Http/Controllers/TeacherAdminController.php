@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Facultad;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -14,11 +15,11 @@ class TeacherAdminController extends Controller
         return view('admin.teachers.index', compact('teachers'));
     }
 
-public function create()
-{
-    $facultades = \App\Models\Facultad::all();
-    return view('admin.teachers.create', compact('facultades'));
-}
+    public function create()
+    {
+        $facultades = Facultad::all();
+        return view('admin.teachers.create', compact('facultades'));
+    }
 
     public function store(Request $request)
     {
@@ -48,14 +49,17 @@ public function create()
             'password.required' => 'La contraseña es obligatoria.',
             'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
             'password.regex' => 'La contraseña debe contener una mayúscula, una minúscula, un número y un símbolo.',
+
+            'facultad_id.required' => 'Debe seleccionar una facultad.',
+            'facultad_id.exists' => 'La facultad seleccionada no es válida.',
         ]);
 
         User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'professor',
-            'facultad_id' => $request->facultad_id,
+            'name'         => $request->name,
+            'email'        => $request->email,
+            'password'     => Hash::make($request->password),
+            'role'         => 'professor',
+            'facultad_id'  => $request->facultad_id,
         ]);
 
         return redirect()->route('teachers.index')->with('success', 'Profesor creado.');
@@ -70,7 +74,8 @@ public function create()
     public function edit($id)
     {
         $teacher = User::where('role', 'professor')->findOrFail($id);
-        return view('admin.teachers.edit', compact('teacher'));
+        $facultades = Facultad::all();
+        return view('admin.teachers.edit', compact('teacher', 'facultades'));
     }
 
     public function update(Request $request, $id)
@@ -90,6 +95,7 @@ public function create()
                 'min:8',
                 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&]).+$/'
             ],
+            'facultad_id' => ['required', 'exists:facultades,id'],
         ], [
             'name.required' => 'El nombre es obligatorio.',
             'name.regex' => 'El nombre solo puede contener letras y espacios.',
@@ -101,10 +107,14 @@ public function create()
 
             'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
             'password.regex' => 'La contraseña debe contener una mayúscula, una minúscula, un número y un símbolo.',
+
+            'facultad_id.required' => 'Debe seleccionar una facultad.',
+            'facultad_id.exists' => 'La facultad seleccionada no es válida.',
         ]);
 
         $teacher->name = $request->name;
         $teacher->email = $request->email;
+        $teacher->facultad_id = $request->facultad_id;
 
         if ($request->filled('password')) {
             $teacher->password = Hash::make($request->password);
@@ -115,17 +125,14 @@ public function create()
         return redirect()->route('teachers.index')->with('success', 'Profesor actualizado.');
     }
 
+    public function destroy($id)
+    {
+        $teacher = User::findOrFail($id);
 
-public function destroy($id)
-{
-    $teacher = User::findOrFail($id);
+        \App\Models\Justification::where('professor_id', $teacher->id)->delete();
 
-    // Elimina las justificaciones asociadas
-    \App\Models\Justification::where('professor_id', $teacher->id)->delete();
+        $teacher->delete();
 
-    // Ahora elimina el profesor
-    $teacher->delete();
-
-    return redirect()->route('teachers.index')->with('success', 'Profesor eliminado correctamente.');
-}
+        return redirect()->route('teachers.index')->with('success', 'Profesor eliminado correctamente.');
+    }
 }
