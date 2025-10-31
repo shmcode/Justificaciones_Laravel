@@ -7,6 +7,8 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Justification;
 use App\Models\Classroom;
+use App\Domain\Justifications\Composite\JustificationTreeBuilder;
+
 
 class TeacherController extends Controller
 {
@@ -64,4 +66,43 @@ class TeacherController extends Controller
         // Descargar con nombre único
         return $pdf->download('reporte_justificaciones_'.now()->format('Ymd_His').'.pdf');
     }
+
+
+public function resumenClase(int $classroomId)
+{
+    // Seguridad: validar que la clase pertenece al profesor logueado
+    $classroom = Classroom::where('professor_id', Auth::id())->findOrFail($classroomId);
+
+    // Construimos el árbol (Clase > Estado > Hojas)
+    $tree = JustificationTreeBuilder::byClassAndState($classroomId);
+
+    // Conteos agregados
+    $status = $tree->getStatus(); // ['pendiente'=>n,'aceptado'=>m,'rechazado'=>k,'apelado'=>x]
+
+    // Si tu enum no tiene 'apelado', normalizamos a 0 para no romper la vista
+    foreach (['pendiente','aceptado','rechazado','apelado'] as $k) {
+        if (!array_key_exists($k, $status)) $status[$k] = 0;
+    }
+
+    // Recolectamos hojas por estado para listar
+    $groups = [];
+    foreach ($tree->list() as $groupNode) {
+        // $groupNode es un JustificationGroupComposite con hijos tipo Leaf
+        $name = $groupNode->getName(); // "Pendientes" / "Aceptadas" / "Rechazadas" / "Apeladas"
+        $items = [];
+        foreach ($groupNode->list() as $leaf) {
+            // $leaf->getId() es el ID de la justificación
+            $items[] = \App\Models\Justification::with('student','classroom')
+                        ->find($leaf->getId());
+        }
+        $groups[$name] = collect($items);
+    }
+
+    return view('teacher.summary', [
+        'classroom' => $classroom,
+        'status'    => $status,
+        'groups'    => $groups,
+    ]);
+}
+
 }

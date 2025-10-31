@@ -7,6 +7,7 @@ use App\Models\Justification;
 use App\Models\Classroom;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
+use App\Domain\Justifications\Composite\JustificationTreeBuilder;
 
 class AdminController extends Controller
 {
@@ -113,4 +114,40 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', 'Justificación rechazada.');
     }
+    public function bulkApprove(Request $request)
+{
+    $status      = $request->get('status', 'pendiente'); // por defecto pendientes
+    $classroomId = $request->get('classroom_id', '');
+
+    $query = Justification::query();
+    if ($status)      $query->where('status', $status);
+    if ($classroomId) $query->where('classroom_id', $classroomId);
+
+    $rows = $query->get();
+    $tree = JustificationTreeBuilder::fromCollection('bulk', 'Lote actual', $rows);
+
+    $count = $tree->approve(auth()->id());
+
+    return redirect()->back()->with('success', "Se aprobaron $count justificación(es).");
+}
+
+public function bulkReject(Request $request)
+{
+    $request->validate(['reason' => 'required|string|max:1000']);
+
+    $status      = $request->get('status', 'pendiente');
+    $classroomId = $request->get('classroom_id', '');
+
+    $query = Justification::query();
+    if ($status)      $query->where('status', $status);
+    if ($classroomId) $query->where('classroom_id', $classroomId);
+
+    $rows = $query->get();
+    $tree = JustificationTreeBuilder::fromCollection('bulk', 'Lote actual', $rows);
+
+    $count = $tree->reject(auth()->id(), $request->reason);
+
+    return redirect()->back()->with('success', "Se rechazaron $count justificación(es).");
+}
+
 }

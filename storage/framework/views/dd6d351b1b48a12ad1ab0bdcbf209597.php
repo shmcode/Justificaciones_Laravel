@@ -135,4 +135,4 @@
   </script>
 </body>
 
-</html><?php /**PATH /Users/mariabelenaa/JUSTIFICACIONES_GIT_3.0/Justificaciones_Laravel/resources/views/layouts/app.blade.php ENDPATH**/ ?>
+</html><?php /**PATH /Users/mariabelenaa/Desktop/JUSTIFICACIONES_LARAVEL/Justificaciones_Laravel/resources/views/layouts/app.blade.php ENDPATH**/ ?>
