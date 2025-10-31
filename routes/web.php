@@ -1,10 +1,11 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
+use App\Presentation\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\StudentController;
-use App\Http\Controllers\TeacherController;
-use App\Http\Controllers\AdminController;
+use App\Presentation\Http\Controllers\AdminController;
+use App\Presentation\Http\Controllers\TeacherController;
+use App\Presentation\Http\Controllers\StudentController;
+
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/student', [StudentController::class, 'index']);
@@ -16,23 +17,23 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/teacher/reporte_pdf', [TeacherController::class, 'reportePdf'])
          ->name('teacher.reporte_pdf');
 
-    Route::resource('/teachers', App\Http\Controllers\TeacherAdminController::class);
+    Route::resource('/teachers', App\Presentation\Http\Controllers\TeacherAdminController::class);
     Route::get('/admin', [AdminController::class, 'index']);
     Route::post('/justifications/{id}/accept', [AdminController::class, 'accept']);
     Route::post('/justifications/{id}/reject', [AdminController::class, 'reject']);
 });
 
-Route::post('/student', [App\Http\Controllers\StudentController::class, 'store'])->name('student.store');
+Route::post('/student', [App\Presentation\Http\Controllers\StudentController::class, 'store'])->name('student.store');
 
-Route::get('/admin/reporte-justificaciones', [App\Http\Controllers\AdminController::class, 'reportePdf'])->name('admin.reporte.pdf');
+Route::get('/admin/reporte-justificaciones', [App\Presentation\Http\Controllers\AdminController::class, 'reportePdf'])->name('admin.reporte.pdf');
 Route::get('/admin/reporte_pdf', [AdminController::class, 'reportePdf']);
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/student/apelaciones', [App\Http\Controllers\StudentController::class, 'apelaciones']);
-Route::post('/student/apelar/{id}', [App\Http\Controllers\StudentController::class, 'apelar']);
+Route::get('/student/apelaciones', [App\Presentation\Http\Controllers\StudentController::class, 'apelaciones']);
+Route::post('/student/apelar/{id}', [App\Presentation\Http\Controllers\StudentController::class, 'apelar']);
 
 Route::post('/justifications/{id}/accept', [AdminController::class, 'accept']);
 Route::post('/justifications/{id}/reject', [AdminController::class, 'reject']);

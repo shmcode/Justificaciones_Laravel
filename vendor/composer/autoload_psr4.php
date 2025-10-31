@@ -105,5 +105,6 @@ return array(
     'Carbon\\' => array($vendorDir . '/nesbot/carbon/src/Carbon'),
     'Brick\\Math\\' => array($vendorDir . '/brick/math/src'),
     'Barryvdh\\DomPDF\\' => array($vendorDir . '/barryvdh/laravel-dompdf/src'),
+    'App\\Presentation\\' => array($baseDir . '/app/Presentation'),
     'App\\' => array($baseDir . '/app', $vendorDir . '/laravel/pint/app'),
 );
